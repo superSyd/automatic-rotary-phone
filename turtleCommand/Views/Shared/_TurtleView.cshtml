@@ -1,0 +1,122 @@
+﻿<div id="turtleSpeechBubble">
+    <h3 id="turtleResponse">
+    </h3>
+
+</div>
+<img id="turtleImage" src="~/ImageFolder/turtleImage.jpg" width="90"/>
+
+<div id="table">
+    <canvas id="myTableCanvas"
+            style="border:1px solid #000000;"></canvas>
+
+</div>
+
+
+<script>
+    
+    window.onload = drawArea(false, null, null);
+    function drawArea(isTurtlePlacedInput, coordsInput) {  
+
+        console.log(coordsInput, "HERE")
+
+        if (isTurtlePlacedInput == true && coordsInput != null) {
+            console.log("drawTurtle")
+         //   drawFace(ctx, radius);
+           // drawNumbers(ctx, radius);
+           // drawTime(ctx, radius);
+
+            if (coordsInput.f == "NORTH") {
+                document.getElementById("turtleImage").style.transform = "rotate(90deg)"; 
+            } else if (coordsInput.f == "SOUTH") {
+                document.getElementById("turtleImage").style.transform = "rotate(-90deg)"; 
+
+            } else if (coordsInput.f == "EAST") {
+                document.getElementById("turtleImage").style.transform = "scaleX(-1)"; 
+
+            } else if (coordsInput.f == "WEST") {
+                document.getElementById("turtleImage").style.transform = "scaleX(1)"; 
+            }
+            drawTurtle(coordsInput);
+
+        } else if (isTurtlePlacedInput == false){
+            console.log("drawTable")
+
+        //    drawFace(ctx, radius);
+          //  drawNumbers(ctx, radius);
+          //  drawTime(ctx, radius);
+
+            drawTable();
+
+        }
+        
+        
+    }
+
+    function drawTable() {
+        var canvas = document.getElementById("myTableCanvas");
+        var ctx = canvas.getContext("2d");
+        canvas.width = canvas.width;
+        
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#8cab70";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#fdeeb0";
+
+
+        for (var i = 0; i <= 5; i++) {
+            ctx.moveTo(i * canvas.width / 5, 0);
+            ctx.lineTo(i * canvas.width / 5, canvas.height);
+            ctx.stroke();
+
+        }
+
+        for (var i = 0; i <= 5; i++) {
+            ctx.moveTo(0, i * canvas.height / 5);
+            ctx.lineTo(canvas.width, i * canvas.height / 5);
+            ctx.stroke();
+
+        } 
+    }
+
+    function drawTurtle(coordsInput) {
+        var canvas = document.getElementById("myTableCanvas");
+        var ctx = canvas.getContext("2d");
+        canvas.width = canvas.width;
+
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#8cab70";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = "#fdeeb0";
+
+
+        for (var i = 0; i <= 5; i++) {
+            ctx.moveTo(i * canvas.width / 5, 0);
+            ctx.lineTo(i * canvas.width / 5, canvas.height);
+            ctx.stroke();
+
+        }
+
+        for (var i = 0; i <= 5; i++) {
+            ctx.moveTo(0, i * canvas.height / 5);
+            ctx.lineTo(canvas.width, i * canvas.height / 5);
+            ctx.stroke();
+
+        } 
+        
+        ctx.beginPath();
+        ctx.arc(coordsInput.x * ((canvas.width) / 5), (5-coordsInput.y) * ((canvas.height) / 5), 10, 0 * Math.PI, 2 * Math.PI);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        ctx.closePath();
+
+    }
+
+</script>
+

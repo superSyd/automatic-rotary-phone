@@ -1,0 +1,174 @@
+﻿
+<form id="selectFile" method="post" class="form-group" >
+    <select id="files" name="files" class="form-control">
+    </select>
+
+    <input type="submit" id="commandFileButton" value="Command!"/>
+
+
+
+</form>
+
+<form id="upload" method="post" enctype="multipart/form-data" class="form-group">
+    <table>
+        <tr>
+            <td>
+                <input id="uploadFile" type="file" class="form-control"/>
+            </td>
+            <td>
+                <input type="submit" id="uploadButton" value="Upload" class="btn btn-default"/>
+            </td>
+        </tr>
+    </table>
+
+</form>
+
+
+
+
+<div id="fileListing">
+    <table id="fileTable" class="table"></table>
+
+</div>
+
+<script>
+    function updateFileLists(fileList) {
+
+        var nodeFileTable = document.getElementById("fileTable")
+        var nodeFiles = document.getElementById("files")
+
+
+        while (nodeFileTable.firstChild) {
+            nodeFileTable.removeChild(nodeFileTable.firstChild);
+
+        }
+
+        while (nodeFiles.firstChild) {
+            nodeFiles.removeChild(nodeFiles.firstChild);
+
+        }
+
+        fileList.unshift("Please select a file");
+
+        for (i = 0; i < fileList.length; i++) {
+            var tr = document.createElement("tr");
+            var fileNames = document.createElement("td");
+            var text = document.createTextNode(fileList[i]);
+
+            var removeLinks = document.createElement("td");
+            var a = document.createElement("a");
+            var linkText = document.createTextNode("Remove");
+
+            var option = document.createElement("option");
+
+            if (fileList[i] != "Please select a file") {
+
+                fileNames.appendChild(text)
+                a.setAttribute('href', '');
+                a.setAttribute('onclick', 'return removeFile(\x22' + fileList[i] + '\x22)')
+                a.setAttribute('class','btn btn-danger')
+                a.appendChild(linkText);
+                removeLinks.appendChild(a);
+
+                tr.append(fileNames, removeLinks);
+                document.getElementById("fileTable").appendChild(tr);
+
+
+                option.value = fileList[i];
+            }
+            option.text = fileList[i];
+            document.getElementById("files").appendChild(option);
+        }
+
+    }
+    $(document).ready(function () {
+        $.ajax({
+            url: '/File/GetFiles',
+            type: "GET",
+            success: function (result) {
+                var fileListItems = JSON.parse(result.files);
+
+                updateFileLists(fileListItems)
+
+                
+
+
+            }
+        });
+
+    })
+
+    function removeFile(fileName)
+    {
+        console.log(fileName)
+        $.get("/File/RemoveFile/", { fileName: fileName },
+            function (data) {
+                
+                $('#feedback').html(data.feedback);
+
+                var fileListItems = JSON.parse(data.files);
+                updateFileLists(fileListItems)
+
+
+            });
+
+        return false;
+
+    }
+
+    $("#uploadButton").on("click", function (e) {
+
+        if (window.FormData != undefined) {
+
+
+            var formdata = new FormData($('#upload')[0]);
+            formdata.append("uploadFile", $('#uploadFile')[0].files[0])
+
+            $.ajax({
+                url: '/File/UploadFile',
+                type: "POST",
+                contentType: false,
+                processData: false,
+                data: formdata,
+                success: function (result) {
+                    $('#feedback').html(result.feedback);
+                    
+                    var fileListItems = JSON.parse(result.files);
+
+                    updateFileLists(fileListItems)
+
+
+
+                }
+            });
+        }
+        e.preventDefault();
+        return false;
+
+
+    });
+
+    $("#commandFileButton").on("click", function (e) {
+        
+            
+
+            $.post("/Command/ReadFile/", { files: $("#selectFile :selected").val() },
+                function (data) {
+                    console.log(data, "file")
+
+                    var outputList = data.commandString.split('|');
+                    var stringList = outputList.join(" ");
+
+
+                    $('#commandList').html(stringList);
+                    commandTurtle(data.commandString.replace("\\n", "|").split("|"), false);
+
+                });
+        
+        e.preventDefault();
+        return false;
+
+
+    });
+
+</script>

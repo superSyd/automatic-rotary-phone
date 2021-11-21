@@ -1,0 +1,159 @@
+﻿
+
+
+@{
+    ViewBag.Title = "Turtle Command";
+}
+<h2>@ViewBag.Title</h2>
+
+<div id="commandCenter">
+    <div id="commanderContainer">
+        <div id="commander">
+            <h2>Commander</h2>
+            <div id="commanderSection">
+                <img src="~/ImageFolder/commanderImage.jpg"/>
+                <div id="commanderSpeechBubble" style="max-width:200px">
+                    <h3 id="commandList">
+
+                    </h3>
+                </div>
+
+            </div>
+            
+
+            <div id="controls">
+                <!-- Tab switching-->
+                <div class="tab">
+                    <button id="fileButton" class="taboptions" onclick="loadForm(event, 'FileInput')">Select File</button>
+                    <button id="standardButton" class="taboptions" onclick="loadForm(event, 'StandardInput')">Enter Command</button>
+                </div>
+
+                <div id="FileInput" class="tabcontent">
+                    <h3>Select File</h3>
+                    <!--- //File management partial view-->
+                    <div id="feedback">
+
+                    </div>
+                    <div id="filePartialView">
+                        @{Html.RenderPartial("_FileView");}
+                    </div>
+                </div>
+
+                <div id="StandardInput" class="tabcontent">
+                    <h3>Type Command</h3>
+                    <!-- //command entry -->
+                    <!-- //Standard input form -->
+                    <form id="commandForm" class="form-group">
+                        <table id="tableFormInput">
+                            <tr>
+                                <!-- //command input -->
+                                @Html.Label("commandInputLabel", "Please enter one or more commands in next line")
+                                @Html.TextArea("textboxCommand", new { @placeholder = "PLACE x,y,NORTH\r\nMOVE\r\nLEFT\r\nREPORT...", @class = "form-control", @rows = 4 })
+
+
+                            </tr>
+                        </table>
+
+                        <input type="submit" id="commandInputButton" value="Command!"/>
+
+
+                    </form>
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+    <div id="tableContainer">
+        <div>
+            <h2>Turtle</h2>
+            <!--Turtle partial view-->
+            <div id="turtlePartialView" position="relative">
+                
+                
+
+                @{Html.RenderPartial("_TurtleView");}
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+    <script>
+
+        //get command list
+        $(function () {
+            $("#commandInputButton").click(readInput);
+            
+        }); 
+
+        function readInput() {
+            $.post("/Command/ReadInput/", { textboxCommand: $("#textboxCommand").val() },
+                function (data) {
+                    console.log(data,"input")
+                    
+                    $('#commandList').html(data.commandString.replace("\\n", " "));
+                    commandTurtle(data.commandString.replace("\\n", "|").split("|"), false);
+
+                });
+
+            return false;
+
+        }
+
+        function commandTurtle(commandList, placedInput) {
+
+            //get turtle response
+
+            $.get("/Turtle/ReadCommands/", { commandString: JSON.stringify(commandList), isPlaced: placedInput },
+                function (data) {
+
+                    $("#turtleResponse").html(data.response);
+
+
+
+                    var turtlePositionList = JSON.parse(data.position);
+
+                    
+
+                    for (i = 0; i < turtlePositionList.length; i++) {
+
+                        var coordList = turtlePositionList[i].split(",");
+
+                        var coords = {};
+
+                        coords.x = coordList[0];
+                        coords.y = coordList[1];
+                        coords.f = coordList[2];
+
+                        console.log(data.placed, coords)
+                        
+                        drawArea(data.placed, coords)
+                    }
+
+                   
+
+
+                });
+
+        }
+        
+
+        
+    </script>
+
+
+
+
+
+
