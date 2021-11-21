@@ -1,0 +1,30 @@
+﻿#commandCenter {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    background-color: lightblue;
+}
+
+#commandContainer {
+    padding: 10px;
+}
+
+#tableContainer {
+    padding: 10px;
+}
+
+#turtleImage {
+    padding: 10px;
+}
+
+#table {
+    padding: 10px;
+}
+
+#tableFormInput {
+    padding: 10px;
+}
+
+#fileListing {
+    padding: 10px;
+}
